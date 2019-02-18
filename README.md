@@ -12,6 +12,8 @@ In addition to the features in Shirley's code, this adaptation also includes:
 
 For a comparison basis, currently it runs at 60M to 70M samples/s (single-threaded, i7-4712MQ).
 
+![Example](media/out-19feb18.png)
+
 ## License
 
 BSD 3-Clause License
