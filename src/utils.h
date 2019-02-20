@@ -5,28 +5,48 @@
 #ifndef CLRAY_UTILS_H
 #define CLRAY_UTILS_H
 
+#if !defined(__IN_OPENCL__)
+
 #include <stdint.h>
+
+#endif
+
+#include "opencl_compat.h"
 
 #define CLAMP(v, min, max) ((v) < (min) ? (min) : ((v) > (max) ? (max) : (v)))
 
-struct vec3_t;
-struct vec2_t;
+#include "vec3.h"
+#include "vec2.h"
 
-void random_in_unit_sphere(struct vec3_t *result);
+typedef struct frand_state_t {
+    uint64_t x;
+} frand_state_t;
 
-void random_in_unit_disk(struct vec2_t *result);
+vec3 random_in_unit_sphere(frand_state_t *frand_state);
 
-void correct_gamma(struct vec3_t *color, float gamma, struct vec3_t *result);
+vec2 random_in_unit_disk(frand_state_t *frand_state);
 
-float frand();
+vec3 correct_gamma(vec3 color, float gamma);
 
-void sdrand48();
+float frand(frand_state_t *state);
+
+void frand_init(frand_state_t *state, uint64_t seed);
+
+#if !defined(__IN_OPENCL__)
 
 uint64_t time_ms();
 
-#ifdef _MSC_VER
+uint64_t get_random_seed();
+
+#endif
+
+#if defined(_MSC_VER)
 
 double drand48();
+
+#elif defined(__IN_OPENCL__)
+
+float drand48();
 
 #endif
 

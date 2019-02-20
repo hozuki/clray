@@ -2,9 +2,24 @@
 // Created by MIC on 2019-02-16.
 //
 
+#ifdef _MSC_VER
 #define _USE_MATH_DEFINES
+#endif
+
+#if !defined(__IN_OPENCL__)
 
 #include <math.h>
+#include <stdio.h>
+
+#else
+
+#define tanf tan
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#endif
 
 #include "camera.h"
 #include "ray.h"
@@ -17,56 +32,41 @@ void camera_set(camera_t *camera, vec3 *eye, vec3 *lookAt, vec3 *up, float fovDe
     float halfHeight = tanf(theta / 2);
     float halfWidth = halfHeight * aspect;
 
-    vec3_copy(eye, &camera->origin);
+    camera->origin = *eye;
 
     vec3 u, v, w;
-    vec3 tmp;
 
-    vec3_sub(eye, lookAt, &tmp);
-    vec3_normalize(&tmp, &w);
-    vec3_cross(up, &w, &tmp);
-    vec3_normalize(&tmp, &u);
-    vec3_cross(&w, &u, &v);
+    w = vec3_normalize(vec3_sub(*eye, *lookAt));
+    u = vec3_normalize(vec3_cross(*up, w));
+    v = vec3_cross(w, u);
 
-    vec3_copy(&u, &camera->_right);
-    vec3_copy(&v, &camera->_up);
-    vec3_negate(&w, &camera->_front);
+    camera->_right = u;
+    camera->_up = v;
+    camera->_front = vec3_negate(w);
 
-    vec3_mul(&w, focalLength, &tmp);
-    vec3_sub(&camera->origin, &tmp, &camera->center);
+    camera->center = vec3_sub(camera->origin, vec3_mul(w, focalLength));
 
-    vec3_mul(&u, 2 * halfWidth * focalLength, &camera->horizontal);
-    vec3_mul(&v, 2 * halfHeight * focalLength, &camera->vertical);
+    camera->horizontal = vec3_mul(u, 2 * halfWidth * focalLength);
+    camera->vertical = vec3_mul(v, 2 * halfHeight * focalLength);
 
     camera->_lens_radius = aperture / 2;
 }
 
-void camera_get_ray(camera_t *camera, float u, float v, ray_t *ray) {
+void camera_get_ray(__global const camera_t *camera, float u, float v, frand_state_t *frand_state, ray_t *ray) {
     u = u - 0.5f;
     v = v - 0.5f;
 
-    vec2 rd;
-    random_in_unit_disk(&rd);
-    vec2_mul(&rd, camera->_lens_radius, &rd);
+    vec2 rd = random_in_unit_disk(frand_state);
+    rd = vec2_mul(rd, camera->_lens_radius);
 
-    vec3 d1, d2;
+    vec3 offset = vec3_add(vec3_mul(camera->_right, rd.x), vec3_mul(camera->_up, rd.y));
 
-    vec3 offset;
-    vec3_mul(&camera->_right, rd.x, &d1);
-    vec3_mul(&camera->_up, rd.y, &d2);
-    vec3_add(&d1, &d2, &offset);
+    vec3 d1 = vec3_mul(camera->horizontal, u);
+    vec3 d2 = vec3_mul(camera->vertical, v);
 
-    vec3_mul(&camera->horizontal, u, &d1);
-    vec3_mul(&camera->vertical, v, &d2);
+    vec3 origin = vec3_add(camera->origin, offset);
 
-    vec3 origin;
-    vec3_add(&camera->origin, &offset, &origin);
-
-    vec3 direction;
-    vec3_add(&camera->center, &d1, &direction);
-    vec3_add(&direction, &d2, &direction);
-    vec3_sub(&direction, &camera->origin, &direction);
-    vec3_sub(&direction, &offset, &direction);
+    vec3 direction = vec3_sub(vec3_sub(vec3_add(vec3_add(camera->center, d1), d2), camera->origin), offset);
 
     ray_set(ray, &origin, &direction);
 }

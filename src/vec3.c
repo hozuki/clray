@@ -2,101 +2,185 @@
 // Created by MIC on 2019-02-16.
 //
 
+#if !defined(__IN_OPENCL__)
+
 #include <math.h>
 
 #include "utils.h"
+
+#endif
+
 #include "vec3.h"
 
-float vec3_length(vec3 *vec) {
+float vec3_length(const vec3 vec) {
+#if !defined(__IN_OPENCL__)
     return sqrtf(vec3_length_squared(vec));
+#else
+    return length(vec);
+#endif
 }
 
-float vec3_length_squared(vec3 *vec) {
-    return vec->x * vec->x + vec->y * vec->y + vec->z * vec->z;
+float vec3_length_squared(const vec3 vec) {
+#if !defined(__IN_OPENCL__)
+    return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
+#else
+    return pown(length(vec), 2);
+#endif
 }
 
-void vec3_normalize(vec3 *vec, vec3 *result) {
+vec3 vec3_normalize(const vec3 vec) {
+#if !defined(__IN_OPENCL__)
     float length = vec3_length(vec);
-    vec3_div(vec, length, result);
+    return vec3_div(vec, length);
+#else
+    return normalize(vec);
+#endif
 }
 
-void vec3_add(vec3 *v1, vec3 *v2, vec3 *result) {
-    result->x = v1->x + v2->x;
-    result->y = v1->y + v2->y;
-    result->z = v1->z + v2->z;
+vec3 vec3_add(const vec3 v1, const vec3 v2) {
+#if !defined(__IN_OPENCL__)
+    vec3 result;
+
+    result.x = v1.x + v2.x;
+    result.y = v1.y + v2.y;
+    result.z = v1.z + v2.z;
+    result.w = 0;
+
+    return result;
+#else
+    return v1 + v2;
+#endif
 }
 
-void vec3_sub(vec3 *v1, vec3 *v2, vec3 *result) {
-    result->x = v1->x - v2->x;
-    result->y = v1->y - v2->y;
-    result->z = v1->z - v2->z;
+vec3 vec3_sub(const vec3 v1, const vec3 v2) {
+#if !defined(__IN_OPENCL__)
+    vec3 result;
+
+    result.x = v1.x - v2.x;
+    result.y = v1.y - v2.y;
+    result.z = v1.z - v2.z;
+    result.w = 0;
+
+    return result;
+#else
+    return v1 - v2;
+#endif
 }
 
-void vec3_mul_vec(vec3 *v1, vec3 *v2, vec3 *result) {
-    result->x = v1->x * v2->x;
-    result->y = v1->y * v2->y;
-    result->z = v1->z * v2->z;
+vec3 vec3_mul_vec(const vec3 v1, const vec3 v2) {
+#if !defined(__IN_OPENCL__)
+    vec3 result;
+
+    result.x = v1.x * v2.x;
+    result.y = v1.y * v2.y;
+    result.z = v1.z * v2.z;
+    result.w = 0;
+
+    return result;
+#else
+    return v1 * v2;
+#endif
 }
 
-void vec3_mul(vec3 *vec, float f, vec3 *result) {
-    result->x = vec->x * f;
-    result->y = vec->y * f;
-    result->z = vec->z * f;
+vec3 vec3_mul(const vec3 vec, float f) {
+#if !defined(__IN_OPENCL__)
+    vec3 result;
+
+    result.x = vec.x * f;
+    result.y = vec.y * f;
+    result.z = vec.z * f;
+    result.w = 0;
+
+    return result;
+#else
+    return vec * f;
+#endif
 }
 
-void vec3_div(vec3 *vec, float f, vec3 *result) {
-    result->x = vec->x / f;
-    result->y = vec->y / f;
-    result->z = vec->z / f;
+vec3 vec3_div(const vec3 vec, float f) {
+#if !defined(__IN_OPENCL__)
+    vec3 result;
+
+    result.x = vec.x / f;
+    result.y = vec.y / f;
+    result.z = vec.z / f;
+    result.w = 0;
+
+    return result;
+#else
+    return vec / f;
+#endif
 }
 
-float vec3_dot(vec3 *v1, vec3 *v2) {
-    return v1->x * v2->x + v1->y * v2->y + v1->z * v2->z;
+float vec3_dot(const vec3 v1, const vec3 v2) {
+#if !defined(__IN_OPENCL__)
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+#else
+    return dot(v1, v2);
+#endif
 }
 
-void vec3_cross(vec3 *v1, vec3 *v2, vec3 *result) {
-    vec3 v1a, v2a;
+vec3 vec3_cross(const vec3 v1, const vec3 v2) {
+#if !defined(__IN_OPENCL__)
+    vec3 result;
 
-    vec3_copy(v1, &v1a);
-    vec3_copy(v2, &v2a);
+    result.x = v1.y * v2.z - v1.z * v2.y;
+    result.y = v1.z * v2.x - v1.x * v2.z;
+    result.z = v1.x * v2.y - v1.y * v2.x;
+    result.w = 0;
 
-    result->x = v1a.y * v2a.z - v1a.z * v2a.y;
-    result->y = v1a.z * v2a.x - v1a.x * v2a.z;
-    result->z = v1a.x * v2a.y - v1a.y * v2a.x;
+    return result;
+#else
+    return cross(v1, v2);
+#endif
 }
 
-void vec3_set(vec3 *vec, float x, float y, float z) {
-    vec->x = x;
-    vec->y = y;
-    vec->z = z;
-}
+vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount) {
+#if !defined(__IN_OPENCL__)
+    vec3 result;
 
-void vec3_lerp(vec3 *v1, vec3 *v2, float amount, vec3 *result) {
     amount = CLAMP(amount, 0, 1);
 
     float mt = 1 - amount;
 
-    result->x = mt * v1->x + amount * v2->x;
-    result->y = mt * v1->y + amount * v2->y;
-    result->z = mt * v1->z + amount * v2->z;
+    result.x = mt * v1.x + amount * v2.x;
+    result.y = mt * v1.y + amount * v2.y;
+    result.z = mt * v1.z + amount * v2.z;
+    result.w = 0;
+
+    return result;
+#else
+    return v1 * (1 - amount) + v2 * amount;
+#endif
 }
 
-void vec3_reflect(vec3 *v, vec3 *n, vec3 *result) {
-    float p = vec3_dot(v, n);
-    p = 2 * p;
-
-    vec3 nn;
-    vec3_mul(n, p, &nn);
-
-    vec3_sub(n, &nn, result);
+vec3 vec3_reflect(const vec3 v, const vec3 n) {
+#if !defined(__IN_OPENCL__)
+    float p = 2 * vec3_dot(v, n);
+    return vec3_sub(n, vec3_mul(n, p));
+#else
+    return v - 2.0f * dot(v, n) * n;
+#endif
 }
 
-void vec3_negate(vec3 *v, vec3 *result) {
-    result->x = -v->x;
-    result->y = -v->y;
-    result->z = -v->z;
+vec3 vec3_negate(const vec3 v) {
+#if !defined(__IN_OPENCL__)
+    vec3 result;
+
+    result.x = -v.x;
+    result.y = -v.y;
+    result.z = -v.z;
+    result.w = 0;
+
+    return result;
+#else
+    return -v;
+#endif
 }
 
-void vec3_copy(vec3 *src, vec3 *dst) {
-    *dst = *src;
+void vec3_set(vec3 *v, float x, float y, float z) {
+    v->x = x;
+    v->y = y;
+    v->z = z;
+    v->w = 0;
 }

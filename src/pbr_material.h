@@ -5,12 +5,17 @@
 #ifndef CLRAY_PBR_MATERIAL_H
 #define CLRAY_PBR_MATERIAL_H
 
+#if !defined(__IN_OPENCL__)
+
 #include <stdbool.h>
+
+#endif
 
 #include "vec3.h"
 
 struct ray_t;
 struct hit_record_t;
+struct frand_state_t;
 
 enum pbr_material_type_e {
     // Solid (diffuse, metal)
@@ -38,6 +43,6 @@ typedef struct pbr_material_t {
     float refractive_index;
 } pbr_material_t;
 
-bool material_scatter(pbr_material_t *material, struct ray_t *in, struct hit_record_t *rec, vec3 *attenuation, struct ray_t *scattered);
+bool material_scatter(const pbr_material_t *material, const struct ray_t *in, const struct hit_record_t *rec, struct frand_state_t *frand_state, vec3 *attenuation, struct ray_t *scattered);
 
 #endif //CLRAY_PBR_MATERIAL_H

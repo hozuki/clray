@@ -5,6 +5,8 @@
 #include "vec3.h"
 #include "sphere.h"
 #include "pbr_material.h"
+#include "camera.h"
+#include "utils.h"
 #include "scene.h"
 
 void setup_full_camera(camera_t *camera, float aspect) {
@@ -14,9 +16,7 @@ void setup_full_camera(camera_t *camera, float aspect) {
     vec3_set(&lookAt, -8, 1, -3);
     vec3_set(&up, 0, 1, 0);
 
-    vec3 p;
-    vec3_sub(&eye, &lookAt, &p);
-    float dist = vec3_length(&p);
+    float dist = vec3_length(vec3_sub(eye, lookAt));
 
     camera_set(camera, &eye, &lookAt, &up, 30.0f, aspect, 0.05f, dist);
 }
@@ -28,9 +28,7 @@ void setup_test_camera(camera_t *camera, float aspect) {
     vec3_set(&lookAt, 0, 0, -1);
     vec3_set(&up, 0, 1, 0);
 
-    vec3 p;
-    vec3_sub(&eye, &lookAt, &p);
-    float dist = vec3_length(&p);
+    float dist = vec3_length(vec3_sub(eye, lookAt));
 
     camera_set(camera, &eye, &lookAt, &up, 30.0f, aspect, 0.01f, dist);
 }
@@ -42,20 +40,16 @@ void setup_basic_camera(camera_t *camera, float aspect) {
     vec3_set(&lookAt, 0, 0, 0);
     vec3_set(&up, 0, 1, 0);
 
-    vec3 p;
-    vec3_sub(&eye, &lookAt, &p);
-    float dist = vec3_length(&p);
+    float dist = vec3_length(vec3_sub(eye, lookAt));
 
     camera_set(camera, &eye, &lookAt, &up, 30.0f, aspect, 0.01f, dist);
 }
 
-void setup_full_scene(scene_t *scene) {
-    int32_t maxNumSpheres = 500;
+void setup_full_scene(scene_t *scene, frand_state_t *frand_state) {
     size_t i;
     sphere_t *s;
 
-    sphere_t *pObjects = (sphere_t *)malloc(maxNumSpheres * sizeof(sphere_t));
-    scene->objects = pObjects;
+    sphere_t *pObjects = scene->objects;
 
     i = 0;
     s = pObjects + i;
@@ -73,23 +67,25 @@ void setup_full_scene(scene_t *scene) {
     for (int32_t a = -11; a < 11; a += 1) {
         for (int32_t b = -11; b < 11; b += 1) {
             vec3 center;
-            vec3_set(&center, a + 0.9f * frand(), 0.2f, b + 0.9f * frand());
+            vec3_set(&center, a + 0.9f * frand(frand_state), 0.2f, b + 0.9f * frand(frand_state));
 
-            vec3 tmp;
-            vec3_sub(&center, &sceneCenter, &tmp);
+            vec3 tmp = vec3_sub(center, sceneCenter);
 
-            if (vec3_length(&tmp) > 0.9f) {
+            if (vec3_length(tmp) > 0.9f) {
                 s = pObjects + i;
 
                 s->center = center;
                 s->radius = 0.2f;
 
-                float chooseMat = frand();
+                float chooseMat = frand(frand_state);
 
                 if (chooseMat < 0.2f) {
                     // Diffuse
                     vec3 albedo;
-                    vec3_set(&albedo, frand() * frand(), frand() * frand(), frand() * frand());
+                    vec3_set(&albedo,
+                             frand(frand_state) * frand(frand_state),
+                             frand(frand_state) * frand(frand_state),
+                             frand(frand_state) * frand(frand_state));
 
                     s->material.type = material_type_solid;
                     s->material.albedo = albedo;
@@ -97,21 +93,27 @@ void setup_full_scene(scene_t *scene) {
                 } else if (chooseMat < 0.4f) {
                     // Metallic
                     vec3 albedo;
-                    vec3_set(&albedo, 0.5f * (1 + frand()), 0.5f * (1 + frand()), 0.5f * (1 + frand()));
+                    vec3_set(&albedo,
+                             0.5f * (1 + frand(frand_state)),
+                             0.5f * (1 + frand(frand_state)),
+                             0.5f * (1 + frand(frand_state)));
 
                     s->material.type = material_type_solid;
                     s->material.albedo = albedo;
                     s->material.metallic = 1;
-                    s->material.roughness = 0.5f * frand();
+                    s->material.roughness = 0.5f * frand(frand_state);
                 } else {
                     // Glass
                     vec3 albedo;
-                    vec3_set(&albedo, 0.5f * (1 + frand()), 0.5f * (1 + frand()), 0.5f * (1 + frand()));
+                    vec3_set(&albedo,
+                             0.5f * (1 + frand(frand_state)),
+                             0.5f * (1 + frand(frand_state)),
+                             0.5f * (1 + frand(frand_state)));
 
                     s->material.type = material_type_refractive;
                     s->material.albedo = albedo;
                     // [1.0, 2.5)
-                    s->material.refractive_index = 1 + frand() * 1.5f;
+                    s->material.refractive_index = 1 + frand(frand_state) * 1.5f;
                 }
 
                 i += 1;
@@ -159,11 +161,10 @@ void setup_full_scene(scene_t *scene) {
     scene->n = i;
 }
 
-void setup_test_scene(scene_t *scene) {
+void setup_test_scene(scene_t *scene, frand_state_t *frand_state) {
     scene->n = 4;
 
-    sphere_t *pObjects = (sphere_t *)malloc(scene->n * sizeof(sphere_t));
-    scene->objects = pObjects;
+    sphere_t *pObjects = scene->objects;
 
     sphere_t *s;
 
@@ -201,11 +202,10 @@ void setup_test_scene(scene_t *scene) {
     s->material.refractive_index = 1.5f;
 }
 
-void setup_basic_scene(scene_t *scene) {
+void setup_basic_scene(scene_t *scene, frand_state_t *frand_state) {
     scene->n = 4;
 
-    sphere_t *pObjects = (sphere_t *)malloc(scene->n * sizeof(sphere_t));
-    scene->objects = pObjects;
+    sphere_t *pObjects = scene->objects;
 
     sphere_t *s;
 

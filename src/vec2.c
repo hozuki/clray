@@ -4,11 +4,19 @@
 
 #include "vec2.h"
 
-float vec2_length_squared(vec2 *v) {
-    return v->x * v->x + v->y * v->y;
+#if !defined(__IN_OPENCL__)
+
+float vec2_length_squared(const vec2 v) {
+    return v.x * v.x + v.y * v.y;
 }
 
-void vec2_mul(vec2 *vec, float f, vec2 *result) {
-    result->x = vec->x * f;
-    result->y = vec->y * f;
+vec2 vec2_mul(const vec2 v, float f) {
+    vec2 result;
+
+    result.x = v.x * f;
+    result.y = v.y * f;
+
+    return result;
 }
+
+#endif

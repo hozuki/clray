@@ -5,42 +5,48 @@
 #ifndef CLRAY_VEC3_H
 #define CLRAY_VEC3_H
 
-#include "utils.h"
+#if !defined(__IN_OPENCL__)
 
 typedef struct vec3_t {
     float x;
     float y;
     float z;
+    // Serves as padding
+    float w;
 } vec3;
 
-void vec3_set(vec3 *vec, float x, float y, float z);
+#else
 
-float vec3_length(vec3 *vec);
+typedef float4 vec3;
 
-float vec3_length_squared(vec3 *vec);
+#endif
 
-void vec3_normalize(vec3 *vec, vec3 *result);
+float vec3_length(const vec3 vec);
 
-void vec3_add(vec3 *v1, vec3 *v2, vec3 *result);
+float vec3_length_squared(const vec3 vec);
 
-void vec3_sub(vec3 *v1, vec3 *v2, vec3 *result);
+vec3 vec3_normalize(const vec3 v);
 
-void vec3_mul_vec(vec3 *v1, vec3 *v2, vec3 *result);
+vec3 vec3_add(const vec3 v1, const vec3 v2);
 
-void vec3_mul(vec3 *vec, float f, vec3 *result);
+vec3 vec3_sub(const vec3 v1, const vec3 v2);
 
-void vec3_div(vec3 *vec, float f, vec3 *result);
+vec3 vec3_mul_vec(const vec3 v1, const vec3 v2);
 
-float vec3_dot(vec3 *v1, vec3 *v2);
+vec3 vec3_mul(const vec3 vec, float f);
 
-void vec3_cross(vec3 *v1, vec3 *v2, vec3 *result);
+vec3 vec3_div(const vec3 vec, float f);
 
-void vec3_lerp(vec3 *v1, vec3 *v2, float amount, vec3 *result);
+float vec3_dot(const vec3 v1, const vec3 v2);
 
-void vec3_reflect(vec3 *v, vec3 *n, vec3 *result);
+vec3 vec3_cross(const vec3 v1, const vec3 v2);
 
-void vec3_negate(vec3 *v, vec3 *result);
+vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount);
 
-void vec3_copy(vec3 *src, vec3 *dst);
+vec3 vec3_reflect(const vec3 v, const vec3 n);
+
+vec3 vec3_negate(const vec3 v);
+
+void vec3_set(vec3 *v, float x, float y, float z);
 
 #endif //CLRAY_VEC3_H
