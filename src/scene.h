@@ -15,7 +15,7 @@ struct camera_t;
 
 struct frand_state_t;
 
-#define CLRAY_MAX_SCENE_SPHERES (15)
+#define CLRAY_MAX_SCENE_SPHERES (50)
 
 #include "sphere.h"
 

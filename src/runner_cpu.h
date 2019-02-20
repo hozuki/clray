@@ -2,9 +2,9 @@
 // Created by MIC on 2019-02-19.
 //
 
-#ifndef CLRAY_CPU_RUNNER_H
-#define CLRAY_CPU_RUNNER_H
+#ifndef CLRAY_RUNNER_CPU_H
+#define CLRAY_RUNNER_CPU_H
 
 void run_cpu_test();
 
-#endif //CLRAY_CPU_RUNNER_H
+#endif //CLRAY_RUNNER_CPU_H
