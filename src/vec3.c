@@ -2,43 +2,25 @@
 // Created by MIC on 2019-02-16.
 //
 
-#if !defined(__IN_OPENCL__)
-
 #include <math.h>
 
 #include "utils.h"
-
-#endif
-
 #include "vec3.h"
 
-float vec3_length(const vec3 vec) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C float vec3_length(const vec3 vec) {
     return sqrtf(vec3_length_squared(vec));
-#else
-    return length(vec);
-#endif
 }
 
-float vec3_length_squared(const vec3 vec) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C float vec3_length_squared(const vec3 vec) {
     return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
-#else
-    return pown(length(vec), 2);
-#endif
 }
 
-vec3 vec3_normalize(const vec3 vec) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_normalize(const vec3 vec) {
     float length = vec3_length(vec);
     return vec3_div(vec, length);
-#else
-    return normalize(vec);
-#endif
 }
 
-vec3 vec3_add(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_add(const vec3 v1, const vec3 v2) {
     vec3 result;
 
     result.x = v1.x + v2.x;
@@ -47,13 +29,9 @@ vec3 vec3_add(const vec3 v1, const vec3 v2) {
     result.w = 0;
 
     return result;
-#else
-    return v1 + v2;
-#endif
 }
 
-vec3 vec3_sub(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_sub(const vec3 v1, const vec3 v2) {
     vec3 result;
 
     result.x = v1.x - v2.x;
@@ -62,13 +40,9 @@ vec3 vec3_sub(const vec3 v1, const vec3 v2) {
     result.w = 0;
 
     return result;
-#else
-    return v1 - v2;
-#endif
 }
 
-vec3 vec3_mul_vec(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_mul_vec(const vec3 v1, const vec3 v2) {
     vec3 result;
 
     result.x = v1.x * v2.x;
@@ -77,13 +51,9 @@ vec3 vec3_mul_vec(const vec3 v1, const vec3 v2) {
     result.w = 0;
 
     return result;
-#else
-    return v1 * v2;
-#endif
 }
 
-vec3 vec3_mul(const vec3 vec, float f) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_mul(const vec3 vec, float f) {
     vec3 result;
 
     result.x = vec.x * f;
@@ -92,13 +62,9 @@ vec3 vec3_mul(const vec3 vec, float f) {
     result.w = 0;
 
     return result;
-#else
-    return vec * f;
-#endif
 }
 
-vec3 vec3_div(const vec3 vec, float f) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_div(const vec3 vec, float f) {
     vec3 result;
 
     result.x = vec.x / f;
@@ -107,21 +73,13 @@ vec3 vec3_div(const vec3 vec, float f) {
     result.w = 0;
 
     return result;
-#else
-    return vec / f;
-#endif
 }
 
-float vec3_dot(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C float vec3_dot(const vec3 v1, const vec3 v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-#else
-    return dot(v1, v2);
-#endif
 }
 
-vec3 vec3_cross(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_cross(const vec3 v1, const vec3 v2) {
     vec3 result;
 
     result.x = v1.y * v2.z - v1.z * v2.y;
@@ -130,13 +88,9 @@ vec3 vec3_cross(const vec3 v1, const vec3 v2) {
     result.w = 0;
 
     return result;
-#else
-    return cross(v1, v2);
-#endif
 }
 
-vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount) {
     vec3 result;
 
     amount = CLAMP(amount, 0, 1);
@@ -149,22 +103,14 @@ vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount) {
     result.w = 0;
 
     return result;
-#else
-    return v1 * (1 - amount) + v2 * amount;
-#endif
 }
 
-vec3 vec3_reflect(const vec3 v, const vec3 n) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_reflect(const vec3 v, const vec3 n) {
     float p = 2 * vec3_dot(v, n);
     return vec3_sub(n, vec3_mul(n, p));
-#else
-    return v - 2.0f * dot(v, n) * n;
-#endif
 }
 
-vec3 vec3_negate(const vec3 v) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C vec3 vec3_negate(const vec3 v) {
     vec3 result;
 
     result.x = -v.x;
@@ -173,12 +119,9 @@ vec3 vec3_negate(const vec3 v) {
     result.w = 0;
 
     return result;
-#else
-    return -v;
-#endif
 }
 
-void vec3_set(vec3 *v, float x, float y, float z) {
+EXTERN_C void vec3_set(vec3 *v, float x, float y, float z) {
     v->x = x;
     v->y = y;
     v->z = z;

@@ -6,22 +6,17 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#if !defined(__IN_OPENCL__)
-
 #include <stdlib.h>
 #include <string.h>
-
-#endif
 
 #include "utils.h"
 #include "img.h"
 
-int32_t img_get_index(img_t *img, int32_t x, int32_t y) {
+EXTERN_C int32_t img_get_index(img_t *img, int32_t x, int32_t y) {
     return x + img->width * y;
 }
 
-img_t *img_create(int32_t width, int32_t height) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C img_t *img_create(int32_t width, int32_t height) {
     size_t bufferSize = sizeof(vec3) * width * height;
     vec3 *buffer = (vec3 *)malloc(bufferSize);
 
@@ -34,37 +29,27 @@ img_t *img_create(int32_t width, int32_t height) {
     img->pixels = buffer;
 
     return img;
-#else
-    return NULL;
-#endif
 }
 
-void img_destroy(img_t *img) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C void img_destroy(img_t *img) {
     if (img) {
         free(img->pixels);
     }
 
     free(img);
-#endif
 }
 
-void img_set_pixel(img_t *img, int32_t x, int32_t y, vec3 *value) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C void img_set_pixel(img_t *img, int32_t x, int32_t y, vec3 *value) {
     int index = img_get_index(img, x, y);
     img->pixels[index] = *value;
-#endif
 }
 
-void img_get_pixel(img_t *img, int32_t x, int32_t y, vec3 *result) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C void img_get_pixel(img_t *img, int32_t x, int32_t y, vec3 *result) {
     int index = img_get_index(img, x, y);
     *result = img->pixels[index];
-#endif
 }
 
-void img_get_size(img_t *img, int32_t *width, int32_t *height) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C void img_get_size(img_t *img, int32_t *width, int32_t *height) {
     if (width) {
         *width = img->width;
     }
@@ -72,11 +57,9 @@ void img_get_size(img_t *img, int32_t *width, int32_t *height) {
     if (height) {
         *height = img->height;
     }
-#endif
 }
 
-void img_output(img_t *img, FILE *file) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C void img_output(img_t *img, FILE *file) {
     fprintf(file, "P3\n");
     fprintf(file, "%d %d\n", img->width, img->height);
     fprintf(file, "255\n");
@@ -99,5 +82,4 @@ void img_output(img_t *img, FILE *file) {
 
         fprintf(file, "\n");
     }
-#endif
 }

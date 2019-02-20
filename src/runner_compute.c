@@ -16,11 +16,13 @@
 #include "img.h"
 #include "raytracer.h"
 
-void run_cpu_test() {
+EXTERN_C void run_compute_test() {
     frand_state_t frandState;
 
     frand_init(&frandState, get_random_seed());
+#if RAY_TRACER_ENABLE_DETAILED_LOGGING
     ray_reset_sample_count();
+#endif
 
     int32_t width = 200;
     int32_t height = 100;
@@ -34,7 +36,9 @@ void run_cpu_test() {
 
     img_t *img = img_create(width, height);
 
+#if RAY_TRACER_ENABLE_DETAILED_LOGGING
     ray_tracer_enable_logging(true);
+#endif
 
     ray_tracer_render(&camera, &scene, samples, &frandState, img);
 

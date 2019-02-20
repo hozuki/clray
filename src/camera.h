@@ -5,14 +5,10 @@
 #ifndef CLRAY_CAMERA_H
 #define CLRAY_CAMERA_H
 
-#if !defined(__IN_OPENCL__)
-
 #include <stdbool.h>
 
-#endif
-
+#include "compat.h"
 #include "vec3.h"
-#include "opencl_compat.h"
 
 struct ray_t;
 
@@ -30,8 +26,8 @@ typedef struct camera_t {
     float _lens_radius;
 } camera_t;
 
-void camera_set(camera_t *camera, vec3 *eye, vec3 *lookAt, vec3 *up, float fovDeg, float aspect, float aperture, float focalLength);
+EXTERN_C void camera_set(camera_t *camera, vec3 *eye, vec3 *lookAt, vec3 *up, float fovDeg, float aspect, float aperture, float focalLength);
 
-void camera_get_ray(__global const camera_t *camera, float u, float v, struct frand_state_t *frand_state, struct ray_t *ray);
+EXTERN_C void camera_get_ray(const camera_t *camera, float u, float v, struct frand_state_t *frand_state, struct ray_t *ray);
 
 #endif //CLRAY_CAMERA_H

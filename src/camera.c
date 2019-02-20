@@ -6,20 +6,8 @@
 #define _USE_MATH_DEFINES
 #endif
 
-#if !defined(__IN_OPENCL__)
-
 #include <math.h>
 #include <stdio.h>
-
-#else
-
-#define tanf tan
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
-#endif
 
 #include "camera.h"
 #include "ray.h"
@@ -27,7 +15,7 @@
 #include "vec2.h"
 #include "utils.h"
 
-void camera_set(camera_t *camera, vec3 *eye, vec3 *lookAt, vec3 *up, float fovDeg, float aspect, float aperture, float focalLength) {
+EXTERN_C void camera_set(camera_t *camera, vec3 *eye, vec3 *lookAt, vec3 *up, float fovDeg, float aspect, float aperture, float focalLength) {
     float theta = (float)(fovDeg * M_PI / 180);
     float halfHeight = tanf(theta / 2);
     float halfWidth = halfHeight * aspect;
@@ -52,7 +40,7 @@ void camera_set(camera_t *camera, vec3 *eye, vec3 *lookAt, vec3 *up, float fovDe
     camera->_lens_radius = aperture / 2;
 }
 
-void camera_get_ray(__global const camera_t *camera, float u, float v, frand_state_t *frand_state, ray_t *ray) {
+EXTERN_C void camera_get_ray(const camera_t *camera, float u, float v, frand_state_t *frand_state, ray_t *ray) {
     u = u - 0.5f;
     v = v - 0.5f;
 

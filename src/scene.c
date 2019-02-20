@@ -9,7 +9,7 @@
 #include "utils.h"
 #include "scene.h"
 
-void setup_full_camera(camera_t *camera, float aspect) {
+EXTERN_C void setup_full_camera(camera_t *camera, float aspect) {
     vec3 eye, lookAt, up;
 
     vec3_set(&eye, 8, 1.2f, 3);
@@ -21,7 +21,7 @@ void setup_full_camera(camera_t *camera, float aspect) {
     camera_set(camera, &eye, &lookAt, &up, 30.0f, aspect, 0.05f, dist);
 }
 
-void setup_test_camera(camera_t *camera, float aspect) {
+EXTERN_C void setup_test_camera(camera_t *camera, float aspect) {
     vec3 eye, lookAt, up;
 
     vec3_set(&eye, 2, 0.25f, 1);
@@ -33,7 +33,7 @@ void setup_test_camera(camera_t *camera, float aspect) {
     camera_set(camera, &eye, &lookAt, &up, 30.0f, aspect, 0.01f, dist);
 }
 
-void setup_basic_camera(camera_t *camera, float aspect) {
+EXTERN_C void setup_basic_camera(camera_t *camera, float aspect) {
     vec3 eye, lookAt, up;
 
     vec3_set(&eye, 0, 0, 2);
@@ -45,7 +45,7 @@ void setup_basic_camera(camera_t *camera, float aspect) {
     camera_set(camera, &eye, &lookAt, &up, 30.0f, aspect, 0.01f, dist);
 }
 
-void setup_full_scene(scene_t *scene, frand_state_t *frand_state) {
+EXTERN_C void setup_full_scene(scene_t *scene, frand_state_t *frand_state) {
     size_t i;
     sphere_t *s;
 
@@ -161,7 +161,7 @@ void setup_full_scene(scene_t *scene, frand_state_t *frand_state) {
     scene->n = i;
 }
 
-void setup_test_scene(scene_t *scene, frand_state_t *frand_state) {
+EXTERN_C void setup_test_scene(scene_t *scene, frand_state_t *frand_state) {
     scene->n = 4;
 
     sphere_t *pObjects = scene->objects;
@@ -202,7 +202,7 @@ void setup_test_scene(scene_t *scene, frand_state_t *frand_state) {
     s->material.refractive_index = 1.5f;
 }
 
-void setup_basic_scene(scene_t *scene, frand_state_t *frand_state) {
+EXTERN_C void setup_basic_scene(scene_t *scene, frand_state_t *frand_state) {
     scene->n = 4;
 
     sphere_t *pObjects = scene->objects;

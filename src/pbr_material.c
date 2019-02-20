@@ -2,19 +2,7 @@
 // Created by MIC on 2019-02-16.
 //
 
-#if !defined(__IN_OPENCL__)
-
 #include <math.h>
-
-#endif
-
-#if defined(__IN_OPENCL__)
-
-//#define powf powr
-#define powf pow
-#define sqrtf sqrt
-
-#endif
 
 #include "ray.h"
 #include "hit_record.h"
@@ -111,7 +99,7 @@ static bool material_scatter_dielectric(const pbr_material_t *material, const ra
     return true;
 }
 
-bool material_scatter(const pbr_material_t *material, const ray_t *in, const hit_record_t *rec, frand_state_t *frand_state, vec3 *attenuation, ray_t *scattered) {
+EXTERN_C bool material_scatter(const pbr_material_t *material, const ray_t *in, const hit_record_t *rec, frand_state_t *frand_state, vec3 *attenuation, ray_t *scattered) {
     switch (material->type) {
         case material_type_solid: {
             if (frand(frand_state) < material->metallic) {

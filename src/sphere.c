@@ -2,22 +2,15 @@
 // Created by MIC on 2019-02-16.
 //
 
-#if !defined(__IN_OPENCL__)
-
 #include <math.h>
 
-#else
-
-#define sqrtf sqrt
-
-#endif
-
+#include "rt_options.h"
 #include "ray.h"
 #include "hit_record.h"
 #include "sphere.h"
 
-bool ray_hit_sphere(const ray_t *ray, __global const sphere_t *sphere, float minDist, float maxDist, hit_record_t *rec) {
-#if !defined(__IN_OPENCL__)
+EXTERN_C bool ray_hit_sphere(const ray_t *ray, const sphere_t *sphere, float minDist, float maxDist, hit_record_t *rec) {
+#if RAY_TRACER_ENABLE_DETAILED_LOGGING
     ray_increment_sample_count();
 #endif
 
@@ -58,13 +51,13 @@ bool ray_hit_sphere(const ray_t *ray, __global const sphere_t *sphere, float min
     return false;
 }
 
-bool ray_hit_spheres(const ray_t *ray, __global const sphere_t *spheres, size_t n, float minDist, float maxDist, hit_record_t *rec) {
+EXTERN_C bool ray_hit_spheres(const ray_t *ray, const sphere_t *spheres, size_t n, float minDist, float maxDist, hit_record_t *rec) {
     hit_record_t tempRec;
     bool hitAnything = false;
     float closestSoFar = maxDist;
 
     for (size_t i = 0; i < n; i += 1) {
-        __global const sphere_t *sphere = spheres + i;
+        const sphere_t *sphere = spheres + i;
 
         if (ray_hit_sphere(ray, sphere, minDist, closestSoFar, &tempRec)) {
             hitAnything = true;

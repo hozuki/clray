@@ -5,7 +5,7 @@
 #ifndef CLRAY_VEC3_H
 #define CLRAY_VEC3_H
 
-#if !defined(__IN_OPENCL__)
+#include "compat.h"
 
 typedef struct vec3_t {
     float x;
@@ -15,38 +15,32 @@ typedef struct vec3_t {
     float w;
 } vec3;
 
-#else
+EXTERN_C float vec3_length(const vec3 vec);
 
-typedef float4 vec3;
+EXTERN_C float vec3_length_squared(const vec3 vec);
 
-#endif
+EXTERN_C vec3 vec3_normalize(const vec3 v);
 
-float vec3_length(const vec3 vec);
+EXTERN_C vec3 vec3_add(const vec3 v1, const vec3 v2);
 
-float vec3_length_squared(const vec3 vec);
+EXTERN_C vec3 vec3_sub(const vec3 v1, const vec3 v2);
 
-vec3 vec3_normalize(const vec3 v);
+EXTERN_C vec3 vec3_mul_vec(const vec3 v1, const vec3 v2);
 
-vec3 vec3_add(const vec3 v1, const vec3 v2);
+EXTERN_C vec3 vec3_mul(const vec3 vec, float f);
 
-vec3 vec3_sub(const vec3 v1, const vec3 v2);
+EXTERN_C vec3 vec3_div(const vec3 vec, float f);
 
-vec3 vec3_mul_vec(const vec3 v1, const vec3 v2);
+EXTERN_C float vec3_dot(const vec3 v1, const vec3 v2);
 
-vec3 vec3_mul(const vec3 vec, float f);
+EXTERN_C vec3 vec3_cross(const vec3 v1, const vec3 v2);
 
-vec3 vec3_div(const vec3 vec, float f);
+EXTERN_C vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount);
 
-float vec3_dot(const vec3 v1, const vec3 v2);
+EXTERN_C vec3 vec3_reflect(const vec3 v, const vec3 n);
 
-vec3 vec3_cross(const vec3 v1, const vec3 v2);
+EXTERN_C vec3 vec3_negate(const vec3 v);
 
-vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount);
-
-vec3 vec3_reflect(const vec3 v, const vec3 n);
-
-vec3 vec3_negate(const vec3 v);
-
-void vec3_set(vec3 *v, float x, float y, float z);
+EXTERN_C void vec3_set(vec3 *v, float x, float y, float z);
 
 #endif //CLRAY_VEC3_H

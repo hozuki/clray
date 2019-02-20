@@ -1,0 +1,10 @@
+//
+// Created by MIC on 2019-02-20.
+//
+
+#ifndef CLRAY_RT_OPTIONS_H
+#define CLRAY_RT_OPTIONS_H
+
+#define RAY_TRACER_ENABLE_DETAILED_LOGGING (0)
+
+#endif //CLRAY_RT_OPTIONS_H

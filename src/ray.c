@@ -4,7 +4,7 @@
 
 #include "ray.h"
 
-#if !defined(__IN_OPENCL__)
+#if RAY_TRACER_ENABLE_DETAILED_LOGGING
 
 #if defined(_WIN32) || defined(WIN32)
 
@@ -23,16 +23,16 @@
 
 #endif
 
-void ray_set(ray_t *ray, const vec3 *origin, const vec3 *direction) {
+EXTERN_C void ray_set(ray_t *ray, const vec3 *origin, const vec3 *direction) {
     ray->origin = *origin;
     ray->direction = vec3_normalize(*direction);
 }
 
-vec3 ray_point_at(const ray_t *ray, float t) {
+EXTERN_C vec3 ray_point_at(const ray_t *ray, float t) {
     return vec3_add(vec3_mul(ray->direction, t), ray->origin);
 }
 
-#if !defined(__IN_OPENCL__)
+#if RAY_TRACER_ENABLE_DETAILED_LOGGING
 
 static volatile int64_t _ray_count = 0;
 

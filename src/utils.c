@@ -2,11 +2,13 @@
 // Created by MIC on 2019-02-16.
 //
 
-#if !defined(__IN_OPENCL__)
-
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+
+#if defined(_WIN32) || defined(WIN32)
+
+#include <Windows.h>
 
 #endif
 
@@ -14,21 +16,13 @@
 #include "vec2.h"
 #include "utils.h"
 
-#if !defined(__IN_OPENCL__)
-#if defined(_WIN32) || defined(WIN32)
-
-#include <Windows.h>
-
-#endif
-#endif
-
-void frand_init(frand_state_t *state, uint64_t seed) {
+EXTERN_C void frand_init(frand_state_t *state, uint64_t seed) {
 #if defined(_MSC_VER) || defined(__IN_OPENCL__)
     state->x = seed;
 #endif
 }
 
-vec3 random_in_unit_sphere(frand_state_t *frand_state) {
+EXTERN_C vec3 random_in_unit_sphere(frand_state_t *frand_state) {
     vec3 result;
     vec3_set(&result, 0, 0, 0);
 
@@ -49,7 +43,7 @@ vec3 random_in_unit_sphere(frand_state_t *frand_state) {
     return result;
 }
 
-vec2 random_in_unit_disk(frand_state_t *frand_state) {
+EXTERN_C vec2 random_in_unit_disk(frand_state_t *frand_state) {
     vec2 result;
 
     do {
@@ -66,20 +60,14 @@ vec2 random_in_unit_disk(frand_state_t *frand_state) {
     return result;
 }
 
-vec3 correct_gamma(vec3 color, float gamma) {
+EXTERN_C vec3 correct_gamma(vec3 color, float gamma) {
     float gammaInv = 1 / gamma;
 
     vec3 result;
 
-#if !defined(__IN_OPENCL__)
     result.x = powf(CLAMP(color.x, 0, 1), gammaInv);
     result.y = powf(CLAMP(color.y, 0, 1), gammaInv);
     result.z = powf(CLAMP(color.z, 0, 1), gammaInv);
-#else
-    result.x = powr(CLAMP(color.x, 0, 1), gammaInv);
-    result.y = powr(CLAMP(color.y, 0, 1), gammaInv);
-    result.z = powr(CLAMP(color.z, 0, 1), gammaInv);
-#endif
     result.w = 0;
 
     return result;
@@ -91,7 +79,7 @@ vec3 correct_gamma(vec3 color, float gamma) {
 #define DEFINE_ULL(n) (n##ULL)
 #endif
 
-float frand(frand_state_t *state) {
+EXTERN_C float frand(frand_state_t *state) {
 #if defined(_MSC_VER) || defined(__IN_OPENCL__)
     uint64_t a = DEFINE_ULL(0x5deece66d);
     uint64_t c = DEFINE_ULL(0xb);
@@ -105,9 +93,7 @@ float frand(frand_state_t *state) {
 #endif
 }
 
-#if !defined(__IN_OPENCL__)
-
-uint64_t time_ms() {
+EXTERN_C uint64_t time_ms() {
 #if defined(_WIN32) || defined(WIN32)
     return GetTickCount64();
 #else
@@ -127,7 +113,7 @@ uint64_t time_ms() {
 #endif
 }
 
-uint64_t get_random_seed() {
+EXTERN_C uint64_t get_random_seed() {
 #ifdef _MSC_VER
     struct {
         union {
@@ -142,5 +128,3 @@ uint64_t get_random_seed() {
     return 0;
 #endif
 }
-
-#endif
