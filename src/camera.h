@@ -27,7 +27,8 @@ typedef struct camera_t {
     vec3 _front;
     vec3 _up;
     vec3 _right;
-    float _lens_radius;
+    cl_float _lens_radius;
+    cl_int _pad0, _pad1, _pad2;
 } camera_t;
 
 void camera_set(camera_t *camera, vec3 *eye, vec3 *lookAt, vec3 *up, float fovDeg, float aspect, float aperture, float focalLength);

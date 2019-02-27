@@ -6,16 +6,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#ifdef __APPLE__
-
-#include <OpenCL/opencl.h>
-
-#else
-
-#include <CL/cl.h>
-
-#endif
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,12 +17,12 @@
 #include "scene.h"
 #include "img.h"
 #include "raytracer.h"
-
+#include "opencl_compat.h"
 #include "runner_opencl.h"
 
 #define ARRAY_SIZE(arr) (sizeof((arr))/sizeof((arr)[0]))
 
-static void cl_render(camera_t *camera, scene_t *scene, int32_t samples, img_t *img);
+static void cl_render(camera_t *camera, scene_t *scene, cl_int samples, img_t *img);
 
 static const char *source_files[] = {
     "../src/kernel.cl",
@@ -47,15 +37,6 @@ static const char *source_files[] = {
     "../src/vec2.c",
     "../src/vec3.c",
 };
-
-static size_t fsize(FILE *fp) {
-    long pos = ftell(fp);
-    fseek(fp, 0, SEEK_END);
-    long end = ftell(fp);
-    fseek(fp, pos, SEEK_SET);
-
-    return (size_t)end;
-}
 
 #define MAX_LINE_LEN (0x10000 + 1)
 #define MAX_SOURCE_SIZE (0x100000 + 1)
@@ -99,8 +80,8 @@ void run_opencl_test() {
 
     frand_init(&frandState, get_random_seed());
 
-    setup_basic_camera(&camera, (float)width / (float)height);
-    setup_basic_scene(&scene, &frandState);
+    setup_full_camera(&camera, (float)width / (float)height);
+    setup_full_scene(&scene, &frandState);
 
     img_t *img = img_create(width, height);
 
@@ -131,8 +112,15 @@ static void _check(cl_int r, const char *message) {
     }
 }
 
-static void cl_render(camera_t *camera, scene_t *scene, int32_t samples, img_t *img) {
-    int32_t width, height;
+#if !defined(__IN_OPENCL__)
+
+static bool _save_kernel_source = true;
+static const char *_kernel_source_file_name = "kernel.cl";
+
+#endif
+
+static void cl_render(camera_t *camera, scene_t *scene, cl_int samples, img_t *img) {
+    cl_int width, height;
     img_get_size(img, &width, &height);
 
     frand_state_t frandState;
@@ -152,7 +140,11 @@ static void cl_render(camera_t *camera, scene_t *scene, int32_t samples, img_t *
 #define DEVICE_ID_COUNT (2)
 #define PLATFORM_ID_COUNT (2)
 
-    int platformIdIndex = 0;
+    // I have two graphics card on my laptop.
+    // Platform 0 for Intel OpenCL impl (GPU) on integrated graphics card.
+    // Platform 1 for NVidia OpenCL impl (GPU) on standalone graphics card.
+    // Platform 2 for Intel OpenCL impl (CPU)
+    int platformIdIndex = 1;
     int deviceIdIndex = 0;
 
     cl_platform_id platform_id[PLATFORM_ID_COUNT] = {0};
@@ -199,7 +191,14 @@ static void cl_render(camera_t *camera, scene_t *scene, int32_t samples, img_t *
     printf("File count: %zu\n", fileCount);
     const char *sourceText = load_concat_sources(source_files, fileCount, &sourceSize);
     printf("Source size: %zu\n", sourceSize);
-//    printf("%s\n", sourceText);
+
+#if !defined(__IN_OPENCL__)
+    if (_save_kernel_source) {
+        FILE *sfp = fopen(_kernel_source_file_name, "w");
+        fprintf(sfp, "%s", sourceText);
+        fclose(sfp);
+    }
+#endif
 
     cl_program program = clCreateProgramWithSource(context, 1, &sourceText, &sourceSize, &ret);
 
@@ -223,9 +222,9 @@ static void cl_render(camera_t *camera, scene_t *scene, int32_t samples, img_t *
 
     ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (const void *)&camera_mem_obj);
     ret |= clSetKernelArg(kernel, 1, sizeof(cl_mem), (const void *)&scene_mem_obj);
-    ret |= clSetKernelArg(kernel, 2, sizeof(int32_t), (const void *)&width);
-    ret |= clSetKernelArg(kernel, 3, sizeof(int32_t), (const void *)&height);
-    ret |= clSetKernelArg(kernel, 4, sizeof(int32_t), (const void *)&samples);
+    ret |= clSetKernelArg(kernel, 2, sizeof(cl_int), (const void *)&width);
+    ret |= clSetKernelArg(kernel, 3, sizeof(cl_int), (const void *)&height);
+    ret |= clSetKernelArg(kernel, 4, sizeof(cl_int), (const void *)&samples);
     ret |= clSetKernelArg(kernel, 5, sizeof(cl_mem), (const void *)&seeds_mem_obj);
     ret |= clSetKernelArg(kernel, 6, sizeof(cl_mem), (const void *)&colors_mem_obj);
     _check(ret, "Set args");

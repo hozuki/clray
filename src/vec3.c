@@ -12,8 +12,10 @@
 
 #include "vec3.h"
 
+#define USE_EMULATED_IMPL (1)
+
 float vec3_length(const vec3 vec) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     return sqrtf(vec3_length_squared(vec));
 #else
     return length(vec);
@@ -21,7 +23,7 @@ float vec3_length(const vec3 vec) {
 }
 
 float vec3_length_squared(const vec3 vec) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
 #else
     return pown(length(vec), 2);
@@ -29,7 +31,7 @@ float vec3_length_squared(const vec3 vec) {
 }
 
 vec3 vec3_normalize(const vec3 vec) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     float length = vec3_length(vec);
     return vec3_div(vec, length);
 #else
@@ -38,13 +40,12 @@ vec3 vec3_normalize(const vec3 vec) {
 }
 
 vec3 vec3_add(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     vec3 result;
 
     result.x = v1.x + v2.x;
     result.y = v1.y + v2.y;
     result.z = v1.z + v2.z;
-    result.w = 0;
 
     return result;
 #else
@@ -53,13 +54,12 @@ vec3 vec3_add(const vec3 v1, const vec3 v2) {
 }
 
 vec3 vec3_sub(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     vec3 result;
 
     result.x = v1.x - v2.x;
     result.y = v1.y - v2.y;
     result.z = v1.z - v2.z;
-    result.w = 0;
 
     return result;
 #else
@@ -68,13 +68,12 @@ vec3 vec3_sub(const vec3 v1, const vec3 v2) {
 }
 
 vec3 vec3_mul_vec(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     vec3 result;
 
     result.x = v1.x * v2.x;
     result.y = v1.y * v2.y;
     result.z = v1.z * v2.z;
-    result.w = 0;
 
     return result;
 #else
@@ -83,13 +82,12 @@ vec3 vec3_mul_vec(const vec3 v1, const vec3 v2) {
 }
 
 vec3 vec3_mul(const vec3 vec, float f) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     vec3 result;
 
     result.x = vec.x * f;
     result.y = vec.y * f;
     result.z = vec.z * f;
-    result.w = 0;
 
     return result;
 #else
@@ -98,13 +96,12 @@ vec3 vec3_mul(const vec3 vec, float f) {
 }
 
 vec3 vec3_div(const vec3 vec, float f) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     vec3 result;
 
     result.x = vec.x / f;
     result.y = vec.y / f;
     result.z = vec.z / f;
-    result.w = 0;
 
     return result;
 #else
@@ -113,7 +110,7 @@ vec3 vec3_div(const vec3 vec, float f) {
 }
 
 float vec3_dot(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 #else
     return dot(v1, v2);
@@ -121,13 +118,12 @@ float vec3_dot(const vec3 v1, const vec3 v2) {
 }
 
 vec3 vec3_cross(const vec3 v1, const vec3 v2) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     vec3 result;
 
     result.x = v1.y * v2.z - v1.z * v2.y;
     result.y = v1.z * v2.x - v1.x * v2.z;
     result.z = v1.x * v2.y - v1.y * v2.x;
-    result.w = 0;
 
     return result;
 #else
@@ -136,7 +132,7 @@ vec3 vec3_cross(const vec3 v1, const vec3 v2) {
 }
 
 vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     vec3 result;
 
     amount = CLAMP(amount, 0, 1);
@@ -146,7 +142,6 @@ vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount) {
     result.x = mt * v1.x + amount * v2.x;
     result.y = mt * v1.y + amount * v2.y;
     result.z = mt * v1.z + amount * v2.z;
-    result.w = 0;
 
     return result;
 #else
@@ -155,7 +150,7 @@ vec3 vec3_lerp(const vec3 v1, const vec3 v2, float amount) {
 }
 
 vec3 vec3_reflect(const vec3 v, const vec3 n) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     float p = 2 * vec3_dot(v, n);
     return vec3_sub(n, vec3_mul(n, p));
 #else
@@ -164,13 +159,12 @@ vec3 vec3_reflect(const vec3 v, const vec3 n) {
 }
 
 vec3 vec3_negate(const vec3 v) {
-#if !defined(__IN_OPENCL__)
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
     vec3 result;
 
     result.x = -v.x;
     result.y = -v.y;
     result.z = -v.z;
-    result.w = 0;
 
     return result;
 #else
@@ -182,5 +176,4 @@ void vec3_set(vec3 *v, float x, float y, float z) {
     v->x = x;
     v->y = y;
     v->z = z;
-    v->w = 0;
 }

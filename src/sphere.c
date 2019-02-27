@@ -58,15 +58,13 @@ bool ray_hit_sphere(const ray_t *ray, __global const sphere_t *sphere, float min
     return false;
 }
 
-bool ray_hit_spheres(const ray_t *ray, __global const sphere_t *spheres, size_t n, float minDist, float maxDist, hit_record_t *rec) {
+bool ray_hit_spheres(const ray_t *ray, __global const sphere_t *spheres, cl_uint n, float minDist, float maxDist, hit_record_t *rec) {
     hit_record_t tempRec;
     bool hitAnything = false;
     float closestSoFar = maxDist;
 
-    for (size_t i = 0; i < n; i += 1) {
-        __global const sphere_t *sphere = spheres + i;
-
-        if (ray_hit_sphere(ray, sphere, minDist, closestSoFar, &tempRec)) {
+    for (cl_uint i = 0; i < n; i += 1) {
+        if (ray_hit_sphere(ray, spheres + i, minDist, closestSoFar, &tempRec)) {
             hitAnything = true;
             closestSoFar = tempRec.t;
             *rec = tempRec;

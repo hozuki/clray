@@ -6,10 +6,11 @@
 #define CLRAY_HIT_RECORD_H
 
 #include "vec3.h"
+#include "opencl_compat.h"
 #include "pbr_material.h"
 
 typedef struct hit_record_t {
-    float t;
+    cl_float t;
     vec3 hit_point;
     vec3 normal;
 

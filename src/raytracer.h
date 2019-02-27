@@ -27,7 +27,7 @@ void compute_color_recursive(const struct ray_t *ray, const struct scene_t *scen
 
 void compute_color_iterative(const struct ray_t *ray, __global const struct scene_t *scene, struct frand_state_t *frand_state, vec3 *color);
 
-#if !defined(__IN_OPENGL__)
+#if !defined(__IN_OPENCL__)
 
 void ray_tracer_enable_logging(bool enabled);
 

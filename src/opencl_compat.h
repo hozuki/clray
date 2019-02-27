@@ -8,8 +8,13 @@
 #if defined(__IN_OPENCL__)
 
 typedef int int32_t;
-typedef ulong int64_t;
-typedef long uint64_t;
+typedef uint uint32_t;
+typedef ulong uint64_t;
+typedef long int64_t;
+typedef float cl_float;
+typedef int cl_int;
+typedef uint cl_uint;
+typedef ulong cl_ulong;
 
 #ifndef NULL
 
@@ -24,6 +29,18 @@ typedef struct {} *FILE;
 #define __local __local
 
 #else
+
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
+
+#ifdef __APPLE__
+
+#include <OpenCL/opencl.h>
+
+#else
+
+#include <CL/cl.h>
+
+#endif
 
 #define __global
 #define __constant

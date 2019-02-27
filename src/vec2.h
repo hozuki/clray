@@ -7,10 +7,9 @@
 
 #if !defined(__IN_OPENCL__)
 
-typedef struct vec2_t {
-    float x;
-    float y;
-} vec2;
+#include "opencl_compat.h"
+
+typedef cl_float2 vec2;
 
 float vec2_length_squared(const vec2 v);
 

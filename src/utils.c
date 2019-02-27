@@ -80,7 +80,6 @@ vec3 correct_gamma(vec3 color, float gamma) {
     result.y = powr(CLAMP(color.y, 0, 1), gammaInv);
     result.z = powr(CLAMP(color.z, 0, 1), gammaInv);
 #endif
-    result.w = 0;
 
     return result;
 }

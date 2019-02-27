@@ -42,7 +42,7 @@ static void compute_skybox_color(const ray_t *ray, vec3 *color) {
 
 #if !defined(__IN_OPENCL__)
 
-static void compute_color_recursive_kernel(const ray_t *ray, const scene_t *scene, frand_state_t *frand_state, vec3 *color, size_t depth) {
+static void compute_color_recursive_kernel(const ray_t *ray, const scene_t *scene, frand_state_t *frand_state, vec3 *color, cl_uint depth) {
     hit_record_t rec;
 
     if (ray_hit_spheres(ray, scene->objects, scene->n, 0.001f, FLT_MAX, &rec)) {
@@ -72,12 +72,12 @@ void compute_color_iterative(const ray_t *ray, __global const scene_t *scene, fr
     vec3 finalColor;
     vec3_set(&finalColor, 1, 1, 1);
 
-    size_t depth = 0;
+    cl_uint depth = 0;
     ray_t scattered;
     ray_t *inputRay = (ray_t *)ray;
 
     __global const sphere_t *spheres = scene->objects;
-    const size_t n = scene->n;
+    const cl_uint n = scene->n;
 
     while (depth < MAX_DEPTH) {
         hit_record_t rec;

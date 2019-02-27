@@ -2,6 +2,12 @@
 // Created by MIC on 2019-02-16.
 //
 
+#if !defined(__IN_OPENCL__)
+
+#include <stdio.h>
+
+#endif
+
 #include "vec3.h"
 #include "sphere.h"
 #include "pbr_material.h"
@@ -46,7 +52,7 @@ void setup_basic_camera(camera_t *camera, float aspect) {
 }
 
 void setup_full_scene(scene_t *scene, frand_state_t *frand_state) {
-    size_t i;
+    uint32_t i;
     sphere_t *s;
 
     sphere_t *pObjects = scene->objects;
@@ -242,3 +248,17 @@ void setup_basic_scene(scene_t *scene, frand_state_t *frand_state) {
     s->material.type = material_type_refractive;
     s->material.refractive_index = 1.5f;
 }
+
+#if !defined(__IN_OPENCL__)
+
+void scene_debug(scene_t *scene) {
+    for (uint32_t i = 0; i < scene->n; i += 1) {
+        const sphere_t *s = scene->objects + i;
+
+        fprintf(stdout, "Item #%u:\n", i);
+        fprintf(stdout, "Pos: (%f %f %f [%f])\n", s->center.x, s->center.y, s->center.z, s->center.w);
+        fprintf(stdout, "R: %f\n", s->radius);
+    }
+}
+
+#endif

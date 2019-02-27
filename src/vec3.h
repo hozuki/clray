@@ -5,19 +5,15 @@
 #ifndef CLRAY_VEC3_H
 #define CLRAY_VEC3_H
 
+#include "opencl_compat.h"
+
 #if !defined(__IN_OPENCL__)
 
-typedef struct vec3_t {
-    float x;
-    float y;
-    float z;
-    // Serves as padding
-    float w;
-} vec3;
+typedef cl_float3 vec3;
 
 #else
 
-typedef float4 vec3;
+typedef float3 vec3;
 
 #endif
 

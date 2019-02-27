@@ -16,8 +16,8 @@
 #include "opencl_compat.h"
 
 typedef struct img_t {
-    int32_t width;
-    int32_t height;
+    cl_int width;
+    cl_int height;
     vec3 *pixels;
 } img_t;
 

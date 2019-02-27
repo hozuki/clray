@@ -19,7 +19,7 @@
 #include "vec2.h"
 
 typedef struct frand_state_t {
-    uint64_t x;
+    cl_ulong x;
 } frand_state_t;
 
 vec3 random_in_unit_sphere(frand_state_t *frand_state);
