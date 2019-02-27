@@ -23,14 +23,14 @@ It tries to load the sources, and searches for headers from `../src`, so you sho
 You have to pay extreme attention to the byte alignments in OpenCL.
 Please check the commit history to see the differences in structure definitions.
 All fields were aligned by 4 bytes, but that was not enough and caused severe data corruption (which is inside the graphics card and hard to debug).
-Finally I followed the suggestion from [here](https://stackoverflow.com/a/17374931), and aligned all fields by 16 bytes by adding paddings. Then it worked as expected.
+Finally I followed the suggestion from [here](https://stackoverflow.com/a/17374931), and aligned fields by 4 bytes, sizes of structures by 16 bytes by adding paddings.
+Then it worked as expected. The alignments depend on concrete devices and I suggest to align at least by 8 bytes for sizes.
 
 Embracing [SYCL](https://www.khronos.org/sycl/) does not help in this program.
 The compiler (the ComputeCPP one) *does not* analyze call references, which means you have to write the whole kernel *inside* a local lambda.
 This is definitely a nightmare for a sophisticated program like the one here, which is divided into components.
 
-The acceleration is quite obvious. My standalone GPU reduced the time from ~24 mins (on CPU) to ~1 min rendering the same or similar scene, with the same pixel dimensions.
-But it suffers from mild precision loss.
+The acceleration is quite obvious. My standalone video card reduced the time from ~24 mins (on CPU) to ~1 min rendering the same or similar scene, with the same pixel dimensions.
 
 ![Example (Feb 27, 2019)](media/out-20190227.png)
 
