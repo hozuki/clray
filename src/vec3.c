@@ -177,3 +177,17 @@ void vec3_set(vec3 *v, float x, float y, float z) {
     v->y = y;
     v->z = z;
 }
+
+vec3 vec3_pow(const vec3 v, float p) {
+#if !defined(__IN_OPENCL__) || USE_EMULATED_IMPL
+    vec3 result;
+
+    result.x = powf(v.x, p);
+    result.y = powf(v.y, p);
+    result.z = powf(v.z, p);
+
+    return result;
+#else
+    return pow(v, p);
+#endif
+}

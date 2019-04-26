@@ -45,4 +45,6 @@ vec3 vec3_negate(const vec3 v);
 
 void vec3_set(vec3 *v, float x, float y, float z);
 
+vec3 vec3_pow(const vec3 v, float p);
+
 #endif //CLRAY_VEC3_H

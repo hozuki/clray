@@ -75,17 +75,18 @@ static bool material_scatter_metal(const pbr_material_t *material, const ray_t *
 }
 
 static bool material_scatter_dielectric(const pbr_material_t *material, const ray_t *in, const hit_record_t *rec, frand_state_t *frand_state, vec3 *attenuation, ray_t *scattered) {
-    *attenuation = material->albedo;
-
     float niOverNt;
     vec3 outwardNormal;
     float cosine = vec3_dot(in->direction, rec->normal);
+    bool leavingObject = cosine > 0;
 
-    if (cosine > 0) {
+    if (leavingObject) {
+        // The ray goes from object to environment
         outwardNormal = vec3_negate(rec->normal);
         niOverNt = material->refractive_index;
         cosine = material->refractive_index * cosine;
     } else {
+        // The ray goes from environment to object
         outwardNormal = rec->normal;
         niOverNt = 1 / material->refractive_index;
         cosine = -cosine;
@@ -103,8 +104,20 @@ static bool material_scatter_dielectric(const pbr_material_t *material, const ra
     if (frand(frand_state) < reflectionProbability) {
         vec3 reflected = vec3_reflect(in->direction, rec->normal);
 
+        *attenuation = material->albedo;
+
         ray_set(scattered, &rec->hit_point, &reflected);
     } else {
+        if (leavingObject) {
+            vec3 path = vec3_sub(rec->hit_point, in->origin);
+            float pathLength = vec3_length(path);
+            float power = powf(material->path_attenuation_rate, 1.25f * pathLength);
+
+            *attenuation = vec3_pow(material->albedo, power);
+        } else {
+            *attenuation = material->albedo;
+        }
+
         ray_set(scattered, &rec->hit_point, &refracted);
     }
 

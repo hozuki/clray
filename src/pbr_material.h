@@ -36,13 +36,24 @@ typedef struct pbr_material_t {
     // How metallic it is.
     // 0 = pure diffuse
     // 1 = pure metal
+    // Only enabled when the material is solid.
     cl_float metallic;
     // How rough it is.
     // 0 = smooth
     // 1 = rough
+    // Only enabled when the material is solid.
     cl_float roughness;
 
+    // Refractive index (> 0)
+    // Only enabled when the material is refractive.
     cl_float refractive_index;
+
+    // Attenuation rate when the ray travels inside a material (> 0)
+    // Only enabled when the material is refractive.
+    // Larger value causes photon energy to drop more quickly.
+    cl_float path_attenuation_rate;
+
+    cl_int _pad[3];
 } pbr_material_t;
 
 bool material_scatter(const pbr_material_t *material, const struct ray_t *in, const struct hit_record_t *rec, struct frand_state_t *frand_state, vec3 *attenuation, struct ray_t *scattered);

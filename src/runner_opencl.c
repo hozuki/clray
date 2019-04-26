@@ -112,12 +112,8 @@ static void _check(cl_int r, const char *message) {
     }
 }
 
-#if !defined(__IN_OPENCL__)
-
 static bool _save_kernel_source = true;
 static const char *_kernel_source_file_name = "kernel.cl";
-
-#endif
 
 static void cl_render(camera_t *camera, scene_t *scene, cl_int samples, img_t *img) {
     cl_int width, height;
@@ -192,13 +188,11 @@ static void cl_render(camera_t *camera, scene_t *scene, cl_int samples, img_t *i
     const char *sourceText = load_concat_sources(source_files, fileCount, &sourceSize);
     printf("Source size: %zu\n", sourceSize);
 
-#if !defined(__IN_OPENCL__)
     if (_save_kernel_source) {
         FILE *sfp = fopen(_kernel_source_file_name, "w");
         fprintf(sfp, "%s", sourceText);
         fclose(sfp);
     }
-#endif
 
     cl_program program = clCreateProgramWithSource(context, 1, &sourceText, &sourceSize, &ret);
 
@@ -234,11 +228,14 @@ static void cl_render(camera_t *camera, scene_t *scene, cl_int samples, img_t *i
     clGetKernelWorkGroupInfo(kernel, device_id[deviceIdIndex], CL_KERNEL_WORK_GROUP_SIZE, sizeof(max_local_item_size), &max_local_item_size, NULL);
     size_t nw = (size_t)width;
     size_t local_item_size;
+
     do {
         local_item_size = nw;
         nw = nw / 2;
     } while (nw > max_local_item_size);
+
     size_t global_item_size = pixelCount;
+
     _log("Global size: %zu; local size: %zu; max local: %zu\n", global_item_size, local_item_size, max_local_item_size);
     ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL, &global_item_size, &local_item_size, 0, NULL, &kernelDone);
     _check(ret, "Enqueue ND kernel");

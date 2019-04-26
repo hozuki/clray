@@ -120,6 +120,8 @@ void setup_full_scene(scene_t *scene, frand_state_t *frand_state) {
                     s->material.albedo = albedo;
                     // [1.0, 2.5)
                     s->material.refractive_index = 1 + frand(frand_state) * 1.5f;
+                    // [2.0, 10.0)
+                    s->material.path_attenuation_rate = 2 + frand(frand_state) * 8;
                 }
 
                 i += 1;
@@ -135,6 +137,7 @@ void setup_full_scene(scene_t *scene, frand_state_t *frand_state) {
         s->material.type = material_type_refractive;
         vec3_set(&s->material.albedo, 1.0f, 1.0f, 1.0f);
         s->material.refractive_index = 1.5f;
+        s->material.path_attenuation_rate = 1.0f;
 
         i += 1;
     }
@@ -206,6 +209,7 @@ void setup_test_scene(scene_t *scene, frand_state_t *frand_state) {
     vec3_set(&s->material.albedo, 0.8f, 0.8f, 0.8f);
     s->material.type = material_type_refractive;
     s->material.refractive_index = 1.5f;
+    s->material.path_attenuation_rate = 2.0f;
 }
 
 void setup_basic_scene(scene_t *scene, frand_state_t *frand_state) {
@@ -247,6 +251,7 @@ void setup_basic_scene(scene_t *scene, frand_state_t *frand_state) {
     vec3_set(&s->material.albedo, 0.8f, 0.8f, 0.8f);
     s->material.type = material_type_refractive;
     s->material.refractive_index = 1.5f;
+    s->material.path_attenuation_rate = 5.0f;
 }
 
 #if !defined(__IN_OPENCL__)
